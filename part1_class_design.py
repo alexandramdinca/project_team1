@@ -53,8 +53,8 @@ class Orders(Base):
 class PlantsProducts(Base):
     __tablename__ = 'PlantsProducts'
     id = Column(Integer, primary_key = True, autoincrement = True)
-    plant_id = Column(Integer, foreign_key = True, foreign_key = Plants.id)
-    product_id = Column(Integer, foreign_key = True, foreign_key = Products.id)
+    plant_id = Column(Integer, ForeignKey('Plants.id'))
+    product_id = Column(Integer, ForeignKey('Products.id'))
     quantity = Column(DECIMAL)
     plants = relationship("Plants", back_populates="plants")
     products = relationship("Products", back_populates="products")
@@ -62,19 +62,18 @@ class PlantsProducts(Base):
 class ProductsMaterials(Base):
     __tablename__ = 'ProductsMaterials'
     id = Column(Integer, primary_key = True, autoincrement = True)
-    product_id = Column(Integer, foreign_key = True, foreign_key = Products.id)
-    material_id = Column(Integer, foreign_key = True, foreign_key = Materials.id)
+    product_id = Column(Integer,  ForeignKey('Products.id'))
+    material_id = Column(Integer,  ForeignKey('Materials.id'))
     quantity = Column(DECIMAL)
     products = relationship("Products", back_populates="products")
     materials = relationship("Materials", back_populates="materials")
 
 
-
 class PlantsMaterials(Base):
     __tablename__ = 'PlantsMaterias'
     id = Column(Integer, primary_key = True, autoincrement = True)
-    plant_id = Column(Integer, foreign_key = True, foreign_key = Plants.id)
-    material_id = Column(Integer, foreign_key = True, foreign_key = Materials.id)
+    plant_id = Column(Integer,  ForeignKey('Plants.id'))
+    material_id = Column(Integer,  ForeignKey('Materials.id'))
     quantity = Column(DECIMAL)
     materials = relationship("Materials", back_populates="materials")
     plants = relationship("Plants", back_populates="plants")
@@ -82,8 +81,8 @@ class PlantsMaterials(Base):
 class OrdersProducts(Base):
     __tablename__ = 'OrdersProducts'
     id = Column(Integer, primary_key = True, autoincrement = True)
-    order_id = Column(Integer, foreign_key = True, foreign_key = Orders.id)
-    product_id = Column(Integer, foreign_key = True, foreign_key = Products.id)
+    order_id = Column(Integer,  ForeignKey('Orders.id'))
+    product_id = Column(Integer,  ForeignKey('Products.id'))
     quantity = Column(Integer)
     products = relationship("Products", back_populates="products")
     orders = relationship("Orders", back_populates="orders")
@@ -91,7 +90,7 @@ class OrdersProducts(Base):
 class StorageProducts(Base):
     __tablename__ = 'StorageProducts'
     id = Column(Integer, primary_key = True, autoincrement = True)
-    product_id = Column(Integer, foreign_key = True, foreign_key = Products.id)
+    product_id = Column(Integer,  ForeignKey('Products.id'))
     quantity = Column(Integer)
     products = relationship("Products", back_populates="products")
     storage = relationship("Storage", back_populates="storage")
@@ -99,9 +98,7 @@ class StorageProducts(Base):
 class StorageMaterials(Base):
     __tablename__ = 'StorageMaterials'
     id = Column(Integer, primary_key = True, autoincrement = True)
-    material_id = Column(Integer, foreign_key = True, foreign_key = Materials.id)
+    material_id = Column(Integer,  ForeignKey('Materials.id'))
     quantity = Column(Integer)
     storage = relationship("Storage", back_populates="storage")
     materials =  relationship("Materials", back_populates="materials")
-
-    
