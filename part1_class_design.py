@@ -16,8 +16,8 @@ class Plants(Base):
     name = Column(String, unique = True, nullable = False)
     location = Column(String)
     capacity = Column(Integer)
-    plant_products = relationship("PlantProducts", back_populates="plants")
-    plant_materials = relationship("PlantMaterials", back_populates="plants")
+    plants_products = relationship("PlantsProducts", back_populates="plants")
+    plants_materials = relationship("PlantsMaterials", back_populates="plants")
 
 class Products(Base):
     __tablename__ = 'Products'
@@ -26,10 +26,10 @@ class Products(Base):
     description = Column(String, nullable = True)
     category = Column(String, nullable = False)
     price = Column(DECIMAL)
-    plant_products = relationship("PlantProduct", back_populates="products")
+    plants_products = relationship("PlantsProducts", back_populates="products")
     storage_products = relationship("StorageProducts", back_populates="products")
-    product_materials = relationship("ProductMaterials", back_populates="products")
-    order_products = relationship("OrderProducts", back_populates="products")
+    products_materials = relationship("ProductsMaterials", back_populates="products")
+    orders_products = relationship("OrdersProducts", back_populates="products")
 
 class Materials(Base):
     __tablename__ = 'Materials'
@@ -38,9 +38,9 @@ class Materials(Base):
     description = Column(String, nullable = True)
     unit = Column(String, nullable = True)
     cost = Column(DECIMAL)
-    plant_materials = relationship("PlantMaterials", back_populates="materials")
+    plants_materials = relationship("PlantsMaterials", back_populates="materials")
     storage_materials = relationship("StorageMaterials", back_populates="materials")
-    product_materials = relationship("ProductMaterials", back_populates="materials")
+    products_materials = relationship("ProductsMaterials", back_populates="materials")
 
 class Orders(Base):
     __tablename__ = 'Orders'
@@ -48,7 +48,7 @@ class Orders(Base):
     order_date = Column(DateTime, nullable = False)
     customer_name = Column(String, nullable = False)
     status = Column(String, nullable = False)
-    order_products = relationship("OrderProducts", back_populates="orders")
+    orders_products = relationship("OrdersProducts", back_populates="orders")
 
 class PlantsProducts(Base):
     __tablename__ = 'PlantsProducts'
@@ -102,3 +102,107 @@ class StorageMaterials(Base):
     quantity = Column(Integer)
     storage = relationship("Storage", back_populates="storage")
     materials =  relationship("Materials", back_populates="materials")
+
+try:
+    with engine.connect() as connection:
+        print("Database connected successfully!")
+except Exception as e:
+    print(f"Error connecting to database: {e}")
+
+
+Session = sessionmaker(bind=engine)
+session = Session()
+
+plants = [
+    Plants(name='Green Valley Plant', location='Springfield, IL', capacity=1000),
+    Plants(name='Herbal Remedies Factory', location='Madison, WI', capacity=1500),
+    Plants(name='Natural Extracts Co.', location='Boulder, CO', capacity=2000),
+    Plants(name='Pure Essence Plants', location='Austin, TX', capacity=1200),
+    Plants(name='Botanical Ingredients Inc.', location='Seattle, WA', capacity=1800),
+]
+session.add_all(plants)
+
+products = [
+    Products(name='Herbal Tea', description='A soothing herbal tea blend.', category='Beverage', price=5.99),
+    Products(name='Natural Shampoo', description='Shampoo made from natural ingredients.', category='Cosmetics', price=12.99),
+    Products(name='Essential Oil', description='Pure essential oil for aromatherapy.', category='Aromatherapy', price=15.99),
+    Products(name='Herbal Extract', description='Concentrated herbal extract for health benefits.', category='Supplements', price=20.99),
+    Products(name='Organic Soap', description='Handmade organic soap with natural ingredients.', category='Cosmetics', price=7.49),
+]
+session.add_all(products)
+
+plants_products = [
+    PlantsProducts(plant_id=1, product_id=1, quantity=200),
+    PlantsProducts(plant_id=1, product_id=2, quantity=150),
+    PlantsProducts(plant_id=2, product_id=3, quantity=300),
+    PlantsProducts(plant_id=3, product_id=4, quantity=100),
+    PlantsProducts(plant_id=4, product_id=5, quantity=250),
+]
+session.add_all(plants_products)
+
+materials = [
+    Materials(name='Chamomile', description='Dried chamomile flowers.', unit='grams', cost=2.50),
+    Materials(name='Lavender', description='Dried lavender flowers.', unit='grams', cost=3.00),
+    Materials(name='Coconut Oil', description='Organic coconut oil.', unit='liters', cost=10.00),
+    Materials(name='Aloe Vera', description='Fresh aloe vera gel.', unit='liters', cost=8.00),
+    Materials(name='Olive Oil', description='Extra virgin olive oil.', unit='liters', cost=12.00),
+]
+session.add_all(materials)
+
+products_materials = [
+    ProductsMaterials(product_id=1, material_id=1, quantity=50),
+    ProductsMaterials(product_id=2, material_id=3, quantity=30),
+    ProductsMaterials(product_id=3, material_id=2, quantity=20),
+    ProductsMaterials(product_id=4, material_id=4, quantity=25),
+    ProductsMaterials(product_id=5, material_id=5, quantity=10),
+]
+session.add_all(products_materials)
+
+plants_materials = [
+    PlantsMaterials(plant_id=1, material_id=1, quantity=100),
+    PlantsMaterials(plant_id=2, material_id=2, quantity=80),
+    PlantsMaterials(plant_id=3, material_id=3, quantity=150),
+    PlantsMaterials(plant_id=4, material_id=4, quantity=90),
+    PlantsMaterials(plant_id=5, material_id=5, quantity=120),
+]
+session.add_all(plants_materials)
+
+storage_products = [
+    StorageProducts(product_id=1, quantity=500),
+    StorageProducts(product_id=2, quantity=300),
+    StorageProducts(product_id=3, quantity=400),
+    StorageProducts(product_id=4, quantity=200),
+    StorageProducts(product_id=5, quantity=600),
+]
+session.add_all(storage_products)
+
+storage_materials = [
+    StorageMaterials(material_id=1, quantity=150),
+    StorageMaterials(material_id=2, quantity=100),
+    StorageMaterials(material_id=3, quantity=200),
+    StorageMaterials(material_id=4, quantity=180),
+    StorageMaterials(material_id=5, quantity=220),
+]
+session.add_all(storage_materials)
+
+orders = [
+    Orders(order_date=datetime(2023, 1, 15), customer_name='Alice Johnson', status='Completed'),
+    Orders(order_date=datetime(2023, 2, 20), customer_name='Bob Smith', status='Pending'),
+    Orders(order_date=datetime(2023, 3, 5), customer_name='Charlie Brown', status='Shipped'),
+    Orders(order_date=datetime(2023, 4, 10), customer_name='Diana Prince', status='Completed'),
+    Orders(order_date=datetime(2023, 5, 25), customer_name='Ethan Hunt', status='Cancelled'),
+]
+session.add_all(orders)
+
+orders_products = [
+    OrdersProducts(order_id=1, product_id=1, quantity=2),
+    OrdersProducts(order_id=1, product_id=3, quantity=1),
+    OrdersProducts(order_id=2, product_id=2, quantity=3),
+    OrdersProducts(order_id=3, product_id=4, quantity=2),
+    OrdersProducts(order_id=4, product_id=5, quantity=5),
+]
+session.add_all(orders_products)
+
+session.commit()
+
+session.close()
