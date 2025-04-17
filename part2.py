@@ -1,6 +1,12 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
+from fastapi import FastAPI, Depends, HTTPException
+from pydantic import BaseModel
+from typing import List, Optional
+from sqlalchemy.orm import Session
+
+from part1 import Plants
 
 class PlantBase(BaseModel):
     name: str
@@ -14,7 +20,7 @@ class PlantRead(PlantBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PlantUpdate(BaseModel):
     name: Optional[str] = None
@@ -31,6 +37,9 @@ def get_db():
         db.close()
 
 from fastapi import FastAPI, Depends, HTTPException
+@app.get('/')
+async def root():
+    return {'message':'Welcome'}
 
 @app.post("/plants/", response_model=PlantRead)
 def create_plant(plant: PlantCreate, db: Session = Depends(get_db)):
@@ -71,6 +80,7 @@ def delete_plant(plant_id: int, db: Session = Depends(get_db)):
     db.commit()
     return {"detail": "Plant deleted successfully"}
 
+
 class ProductBase(BaseModel):
     name: str
     description: Optional[str] = None
@@ -84,7 +94,7 @@ class ProductRead(ProductBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ProductUpdate(BaseModel):
     name: Optional[str] = None
@@ -145,7 +155,7 @@ class MaterialRead(MaterialBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class MaterialUpdate(BaseModel):
     name: Optional[str] = None
@@ -204,7 +214,7 @@ class OrderRead(OrderBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class OrderUpdate(BaseModel):
     order_date: Optional[datetime] = None
